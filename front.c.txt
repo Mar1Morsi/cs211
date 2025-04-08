@@ -40,6 +40,10 @@ int lookup(char ch);
 #define ELSE_ 16
 #define LBRACE 17
 #define RBRACE 18
+#define WHILE_ 30
+#define FOR_ 31
+#define DO_ 32
+#define DO_WHILE_ 33
 
 /******************************************************/
 /* main driver */
@@ -84,13 +88,11 @@ int lookup(char ch) {
             addChar();
             nextToken = DIV_OP;
             break;
-       
         case '=':
-             addChar();
+            addChar();
             nextToken = ASSIGN_OP;
             break;
-
-            case '{':
+        case '{':
             addChar();
             nextToken = LBRACE;
             break;
@@ -98,7 +100,6 @@ int lookup(char ch) {
             addChar();
             nextToken = RBRACE;
             break;
-
         default:
             addChar();
             nextToken = EOF_TOKEN;
@@ -146,7 +147,7 @@ int lex() {
     lexLen = 0;
     getNonBlank();
     switch (charClass) {
-        /* Parse identifiers */
+        /* Parse identifiers and reserved words */
         case LETTER:
             addChar();
             getChar();
@@ -154,16 +155,33 @@ int lex() {
                 addChar();
                 getChar();
             }
-            nextToken = IDENT;
 
             if (strcmp(lexeme, "if") == 0) {
                 nextToken = IF_;
             } else if (strcmp(lexeme, "else") == 0) {
                 nextToken = ELSE_;
+            } else if (strcmp(lexeme, "while") == 0) {
+                nextToken = WHILE_;
+            } else if (strcmp(lexeme, "for") == 0) {
+                nextToken = FOR_;
+            } else if (strcmp(lexeme, "do") == 0) {
+                nextToken = DO_;
+                getNonBlank();
+                if (charClass == LETTER) {
+                    lexLen = 0;  // reset lexeme to capture next word
+                    addChar();
+                    getChar();
+                    while (charClass == LETTER || charClass == DIGIT) {
+                        addChar();
+                        getChar();
+                    }
+                    if (strcmp(lexeme, "while") == 0) {
+                        nextToken = DO_WHILE_;
+                    }
+                }
             } else {
                 nextToken = IDENT;
             }
-
             break;
 
         /* Parse integer literals */

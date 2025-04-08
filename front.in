@@ -1,2 +1,6 @@
-a + b + 3
-if (x) { do while(y) for(z); }
+if(x)
+x = x + 1
+for(i)
+i = i * 2
+while(y)
+y = y - 3
